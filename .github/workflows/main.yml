@@ -25,4 +25,4 @@ jobs:
 
       - name: Build & Push Image
         run: |
-          docker buildx build --push d -f Dockerfiles/ocp4_content --platform linux/amd64,linux/ppc64le --tag quay.io/vahirwad/ocp4-multi:latest .
+          docker buildx build -f Dockerfiles/ocp4_content --push d  --platform linux/amd64,linux/ppc64le --tag quay.io/vahirwad/ocp4-multi:latest .
