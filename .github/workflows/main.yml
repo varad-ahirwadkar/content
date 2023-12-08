@@ -23,6 +23,10 @@ jobs:
           password: ${{ secrets.REGISTRY_TOKEN }}
           registry: quay.io
 
-      - name: Build & Push Image
-        run: |
-          docker buildx build -f Dockerfiles/ocp4_content --push d  --platform linux/amd64,linux/ppc64le --tag quay.io/vahirwad/ocp4-multi:latest .
+      - name: Build and Push Image
+        uses: docker/build-push-action@v3
+        with:
+          file: Dockerfiles/ocp4_content
+          tags: quay.io/vahirwad/ocp4-multi:latest
+          platforms: linux/amd64,linux/ppc64le
+          push: true
