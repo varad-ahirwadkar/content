@@ -11,7 +11,7 @@ jobs:
       contents: read
       id-token: write
       packages: write
-    uses: github.com/varad-ahirwadkar/container-push/.github/workflows/container-push.yml@main
+    uses: varad-ahirwadkar/container-push/.github/workflows/container-push.yml@main
     with:
       name: k8scontent
       tag: latest
