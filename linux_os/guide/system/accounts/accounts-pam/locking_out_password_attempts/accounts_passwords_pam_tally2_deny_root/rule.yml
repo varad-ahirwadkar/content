@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: sle12,sle15
 
 title: 'Configure the root Account lock for Failed Password Attempts via pam_tally2'
 
@@ -20,7 +19,6 @@ identifiers:
     cce@sle15: CCE-91281-6
 
 references:
-    anssi: BP28(R18)
     cis-csc: 1,12,15,16
     cis@sle12: 5.3.2
     cis@sle15: 5.3.2

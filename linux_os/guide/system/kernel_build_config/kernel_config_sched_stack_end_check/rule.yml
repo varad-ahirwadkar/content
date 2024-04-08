@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,rhel8,rhel9
 
 title: 'Detect stack corruption on calls to schedule()'
 
@@ -25,8 +24,6 @@ identifiers:
     cce@rhel8: CCE-88041-9
     cce@rhel9: CCE-89041-8
 
-references:
-    anssi: BP28(R15)
 
 ocil_clause: 'the kernel was not built with the required value'
 

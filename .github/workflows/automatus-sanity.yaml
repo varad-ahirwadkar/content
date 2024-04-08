@@ -2,7 +2,9 @@ name: Automatus Sanity
 on:
   pull_request:
     branches: [ master, 'stabilization*' ]
-
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.run_id }}
+  cancel-in-progress: true
 env:
   DATASTREAM: ssg-fedora-ds.xml
 jobs:
@@ -20,7 +22,7 @@ jobs:
           fetch-depth: 0
       - name: Build product
         run: ./build_product fedora --debug
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.DATASTREAM }}
           path: build/${{ env.DATASTREAM }}
@@ -47,7 +49,7 @@ jobs:
           sudo chown root:root /usr/local/bin/oscap-ssh
           rm -f oscap-ssh
       - name: Get Datastream
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.DATASTREAM }}
       - name: Check One Rule

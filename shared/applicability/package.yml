@@ -6,6 +6,12 @@ template:
 args:
   aide:
     pkgname: aide
+  apparmor:
+    {{% if product in ["sle12", "sle15"] %}}
+      pkgname: apparmor-profiles
+    {{% else %}}
+      pkgname: apparmor
+    {{% endif %}}
   apport:
     pkgname: apport
   audit:
@@ -24,8 +30,12 @@ args:
     {{% endif %}}
   bash:
     pkgname: bash
+  bind:
+    pkgname: bind
   chrony:
     pkgname: chrony
+  dnf:
+    pkgname: dnf
   firewalld:
     pkgname: firewalld
   gdm:
@@ -36,6 +46,8 @@ args:
     {{% endif %}}
   iptables:
     pkgname: iptables
+  libreswan:
+    pkgname: libreswan
   libuser:
     pkgname: libuser
   logrotate:
@@ -77,10 +89,13 @@ args:
     pkgname: rsh-server
   shadow-utils:
     {{% if pkg_system == "rpm" %}}
-    {{% if product in ["sle12", "sle15"] %}}
+    {{% if product in ["openeuler2203", "sle12", "sle15"] %}}
       pkgname: shadow
     {{% else %}}
       pkgname: shadow-utils
+    {{% endif %}}
+    {{% if product in ["openembedded"] %}}
+      pkgname: shadow-base
     {{% endif %}}
     {{% else %}}
       pkgname: login
@@ -117,3 +132,5 @@ args:
     pkgname: yum
   zypper:
     pkgname: zypper
+  apt_get:
+    pkgname: apt

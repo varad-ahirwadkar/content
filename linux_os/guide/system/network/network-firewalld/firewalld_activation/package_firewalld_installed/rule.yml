@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: alinux3,anolis23,anolis8,fedora,ol7,ol8,ol9,openembedded,rhcos4,rhel7,rhel8,rhel9,sle12,sle15
 
 title: 'Install firewalld Package'
 
@@ -28,10 +27,6 @@ identifiers:
     cce@sle15: CCE-85698-9
 
 references:
-    cis@alinux3: 3.4.1.1
-    cis@rhel7: 3.5.1.1
-    cis@rhel8: 3.4.1.1
-    cis@rhel9: 3.4.1.2
     cis@sle15: 3.5.1.1
     disa: CCI-002314
     nist: CM-6(a)
@@ -41,7 +36,6 @@ references:
     stigid@ol7: OL07-00-040520
     stigid@ol8: OL08-00-040100
     stigid@rhel8: RHEL-08-040100
-    stigid@rhel9: RHEL-09-251010
     stigid@sle15: SLES-15-010220
 
 ocil_clause: 'the package is not installed'

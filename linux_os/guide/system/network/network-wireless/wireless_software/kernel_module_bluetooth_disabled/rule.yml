@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol7,ol8,ol9,rhcos4,rhel7,rhel8,rhel9,rhv4
 
 title: 'Disable Bluetooth Kernel Module'
 
@@ -38,7 +37,6 @@ references:
     srg: SRG-OS-000095-GPOS-00049,SRG-OS-000300-GPOS-00118
     stigid@ol8: OL08-00-040111
     stigid@rhel8: RHEL-08-040111
-    stigid@rhel9: RHEL-09-291035
 
 {{{ complete_ocil_entry_module_disable(module="bluetooth") }}}
 

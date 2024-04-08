@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol8,ol9,rhel7,rhel8,rhel9,sle12,sle15
 
 title: 'Configure CA certificate for rsyslog remote logging'
 
@@ -27,7 +26,6 @@ identifiers:
     cce@sle15: CCE-91201-4
 
 references:
-    anssi: BP28(R43)
     ism: 0988,1405
     ospp: FCS_TLSC_EXT.1
     srg: SRG-OS-000480-GPOS-00227

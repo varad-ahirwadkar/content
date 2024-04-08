@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,rhcos4,rhel7,rhel8,rhel9,rhv4
 
 title: 'Prevent non-Privileged Users from Modifying Network Interfaces using nmcli'
 
@@ -40,7 +39,6 @@ references:
     cui: 3.1.16
     ism: 0418,1055,1402
     nist: AC-18(4),CM-6(a)
-    pcidss4: '1.2.8'
 
 ocil_clause: 'non-privileged users can modify or change network settings'
 

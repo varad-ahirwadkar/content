@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol8,ol9,rhcos4,rhel8,rhel9
 
 title: 'Authorize Human Interface Devices and USB hubs in USBGuard daemon'
 
@@ -30,7 +29,7 @@ identifiers:
 references:
     nist: CM-8(3),IA-3
     ospp: FMT_SMF_EXT.1
-    srg: SRG-OS-000114-GPOS-00059
+    srg: SRG-OS-000114-GPOS-00059,SRG-APP-000092-CTR-000165
 
 ocil_clause: 'USB devices of class 3 and 9:00 are not authorized'
 

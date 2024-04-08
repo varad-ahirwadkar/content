@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: ol7,ol8,ol9,rhel7,rhel8,rhel9,rhv4,sle12,sle15
 
 title: 'Configure the deny_execmem SELinux Boolean'
 
@@ -22,8 +21,6 @@ identifiers:
     cce@sle12: CCE-91575-1
     cce@sle15: CCE-91265-9
 
-references:
-    anssi: BP28(R67)
 
 {{{ complete_ocil_entry_sebool_var(sebool="deny_execmem") }}}
 

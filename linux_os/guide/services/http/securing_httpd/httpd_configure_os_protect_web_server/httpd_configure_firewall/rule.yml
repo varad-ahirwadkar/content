@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: rhel7,rhel8
 
 title: 'Configure firewall to Allow Access to the Web Server'
 
@@ -23,9 +22,6 @@ rationale: |-
     of the AIS.
 
 severity: low
-
-references:
-    stigid: WG610
 
 ocil_clause: 'it is not'
 

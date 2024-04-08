@@ -2,6 +2,9 @@ name: Automatus CS8
 on:
   pull_request:
     branches: [ master, 'stabilization*' ]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.run_id }}
+  cancel-in-progress: true
 env:
   DATASTREAM: ssg-centos8-ds.xml
 jobs:
@@ -37,7 +40,7 @@ jobs:
       - name: Test if there are no content changes
         run: echo "CTF_OUTPUT_SIZE=$(stat --printf="%s" output.json)" >> $GITHUB_OUTPUT
         id: ctf
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
         with:
           name: output.json
@@ -55,7 +58,7 @@ jobs:
       - name: Build product
         if: ${{ steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
         run: ./build_product rhel8 --derivatives
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
         with:
           name: ${{ env.DATASTREAM }}
@@ -70,7 +73,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Get cached CTF output
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         id: get_ctf_output
         with:
           name: output.json
@@ -127,7 +130,7 @@ jobs:
         with:
           path: 'output.json'
           prop_path: 'ansible'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         if: ${{ steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
         with:
           name: ${{ env.DATASTREAM }}
@@ -135,7 +138,7 @@ jobs:
         if: ${{steps.bash.outputs.prop == 'True' && steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
         run: tests/test_rule_in_container.sh --no-remove-machine-only --dontclean --logdir logs_bash --remediate-using bash --name ssg_test_suite --datastream $DATASTREAM ${{join(fromJSON(steps.rules.outputs.prop))}}
         env:
-          ADDITIONAL_TEST_OPTIONS: "--duplicate-templates --add-product-to-fips-certified centos8 --product rhel8"
+          ADDITIONAL_TEST_OPTIONS: "--duplicate-templates --remove-fips-certified --product rhel8"
       - name: Check for ERROR in logs
         if: ${{steps.bash.outputs.prop == 'True' && steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
         run: grep -q "^ERROR" logs_bash/test_suite.log
@@ -148,7 +151,7 @@ jobs:
         continue-on-error: true
       - name: Upload logs in case of failure
         if: ${{steps.bash.outputs.prop == 'True' && steps.check_results_bash.outcome == 'success' && steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: logs_bash
           path: logs_bash/
@@ -156,7 +159,7 @@ jobs:
         if: ${{ steps.ansible.outputs.prop == 'True' && steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
         run: tests/test_rule_in_container.sh --no-remove-machine-only --dontclean --logdir logs_ansible --remediate-using ansible --name ssg_test_suite --datastream $DATASTREAM ${{join(fromJSON(steps.rules.outputs.prop))}}
         env:
-          ADDITIONAL_TEST_OPTIONS: "--duplicate-templates --add-product-to-fips-certified centos8 --product rhel8"
+          ADDITIONAL_TEST_OPTIONS: "--duplicate-templates --remove-fips-certified --product rhel8"
       - name: Check for ERROR in logs
         if: ${{steps.ansible.outputs.prop == 'True' && steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
         run: grep -q "^ERROR" logs_ansible/test_suite.log
@@ -164,16 +167,10 @@ jobs:
         continue-on-error: true
       - name: Upload logs in case of failure
         if: ${{ steps.ansible.outputs.prop == 'True' && steps.check_results_ansible.outcome == 'success' && steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: logs_ansible
           path: logs_ansible/
-      - name: Delete datastream artifact
-        if: ${{ steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
-        uses: geekyeggo/delete-artifact@v2
-        with:
-          name: ${{ env.DATASTREAM }}
-          useGlob: false
       - name: Fail in case of ERROR present in logs_bash/test_suite.log or logs_ansible/test_suite.log
         if: ${{ (steps.check_results_bash.outcome == 'success' || steps.check_results_ansible.outcome == 'success') && steps.ctf.outputs.CTF_OUTPUT_SIZE != '0' }}
         run: |

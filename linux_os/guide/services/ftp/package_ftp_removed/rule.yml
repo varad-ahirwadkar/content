@@ -1,6 +1,6 @@
 documentation_complete: true
 
-prodtype: rhel9
+
 
 title: 'Remove ftp Package'
 
@@ -20,11 +20,10 @@ rationale: |-
 severity: low
 
 identifiers:
+    cce@rhel7: CCE-90757-6
+    cce@rhel8: CCE-90745-1
     cce@rhel9: CCE-86075-9
 
-references:
-    cis@rhel9: 2.3.4
-    pcidss4: '2.2.4'
 
 ocil: '{{{ describe_package_remove(package="ftp") }}}'
 

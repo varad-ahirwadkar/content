@@ -1,7 +1,5 @@
 documentation_complete: true
 
-prodtype: debian12,ubuntu2004,ubuntu2204
-
 title: 'Ensure AppArmor is installed'
 
 description: |-
@@ -24,3 +22,4 @@ template:
     name: package_installed
     vars:
         pkgname: apparmor
+        pkgname@sle15: apparmor-profiles

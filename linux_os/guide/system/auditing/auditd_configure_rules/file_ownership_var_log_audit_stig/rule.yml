@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: ol8,ol9,rhel8,rhel9,ubuntu2004,ubuntu2204
 
 title: 'System Audit Logs Must Be Owned By Root'
 
@@ -17,12 +16,12 @@ rationale: |-
 severity: medium
 
 identifiers:
+    cce@rhel7: CCE-88700-0
     cce@rhel8: CCE-88228-2
     cce@rhel9: CCE-89952-6
 
 references:
     cis-csc: 1,11,12,13,14,15,16,18,19,3,4,5,6,7,8
-    cis@rhel9: 4.1.4.2
     cis@ubuntu2204: 4.1.4.2
     cjis: 5.4.1.1
     cobit5: APO01.06,APO11.04,APO12.06,BAI03.05,BAI08.02,DSS02.02,DSS02.04,DSS02.07,DSS03.01,DSS05.04,DSS05.07,DSS06.02,MEA02.01

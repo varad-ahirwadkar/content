@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol7,ol8,ol9,rhel7,rhel8,rhel9,rhv4,sle12,sle15
 
 title: 'Add noexec Option to /boot'
 
@@ -25,8 +24,6 @@ identifiers:
     cce@sle12: CCE-91541-3
     cce@sle15: CCE-91234-5
 
-references:
-    anssi: BP28(R12)
 
 platform: machine
 

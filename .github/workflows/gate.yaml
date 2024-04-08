@@ -6,6 +6,9 @@ on:
     branches: ['*', '!stabilization*', '!stable*', '!master' ]
   pull_request:
     branches: [ 'master', 'stabilization*' ]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.run_id }}
+  cancel-in-progress: true
 jobs:
   validate-centos7:
     name: Build, Test on CentOS 7 (Container)
@@ -83,11 +86,13 @@ jobs:
       - name: Update the package repository
         run: apt-get update
       - name: Install Deps
-        run: apt-get install -y ansible-lint bats check cmake libopenscap8 libxml2-utils ninja-build python3-github python3-pip xsltproc
+        run: apt-get install -y ansible-lint bats check cmake libopenscap8 libxml2-utils ninja-build python3-github python3-pip xsltproc libxslt1-dev libxml2-dev zlib1g-dev
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Upgrade pip python
+        run: pip3 install --upgrade pip
       - name: Install deps python
-        run: pip3 install -r requirements.txt -r test-requirements.txt
+        run: pip3 install -r requirements.txt -r test-requirements.txt --ignore-installed PyYAML
       - name: Build
         env:
           ADDITIONAL_CMAKE_OPTIONS: "-DSSG_ANSIBLE_PLAYBOOKS_PER_RULE_ENABLED=ON -DSSG_OVAL_SCHEMATRON_VALIDATION_ENABLED=OFF"
@@ -144,7 +149,7 @@ jobs:
       -   name: Run Updates
           run: dnf update -y
       -   name: Install Deps
-          run: dnf install -y cmake make openscap-utils bats ansible python3-pip ShellCheck git
+          run: dnf install -y cmake make openscap-utils bats ansible python3-pip ShellCheck git python3-devel gcc-c++
       -   name: Checkout
           uses: actions/checkout@v4
       -   name: Install deps python
@@ -170,3 +175,29 @@ jobs:
       -   name: Test
           run: ctest -j2 --output-on-failure -E unique-stigids
           working-directory: ./build
+
+  validate-windows:
+    name: Build on Windows
+    runs-on: windows-latest
+    env:
+      OPENSCAP_VERSION: "1.4.0"
+      OPENSCAP_ROOT_DIR: "C:\\Program Files\\OpenSCAP 1.4.0"
+    steps:
+        - name: Install Deps
+          run: choco install xsltproc
+        - name: Get Latest OpenSCAP
+          shell: powershell
+          run: "Invoke-WebRequest -Uri https://nightly.link/OpenSCAP/openscap/workflows/build/main/openscap-win64.zip -OutFile ${{ github.workspace }}\\openscap-win.zip"
+        - name: Extract Latest OpenSCAP
+          shell: powershell
+          run: "Expand-Archive -LiteralPath ${{ github.workspace }}\\openscap-win.zip -DestinationPath ${{ github.workspace }}\\openscap-win -Verbose:$true"
+        - name: Install OpenSCAP
+          shell: powershell
+          run: "msiexec.exe /norestart /q /i ${{ github.workspace }}\\openscap-win\\OpenSCAP-${env:OPENSCAP_VERSION}-win64.msi"
+        - name: Checkout
+          uses: actions/checkout@v4
+        - name: Install Python Deps
+          run: pip install -r requirements.txt -r test-requirements.txt
+        - name: Build
+          shell: bash
+          run: ./build_product -j2 fedora

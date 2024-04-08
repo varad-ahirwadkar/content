@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol8,ol9,rhel8,rhel9,sle12,sle15
 
 title: 'Enable dnf-automatic Timer'
 
@@ -20,7 +19,6 @@ identifiers:
     cce@sle15: CCE-91164-4
 
 references:
-    anssi: BP28(R8)
     nist: SI-2(5),CM-6(a),SI-2(c)
     ospp: FMT_SMF_EXT.1
     srg: SRG-OS-000191-GPOS-00080

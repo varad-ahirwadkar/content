@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol8,ol9,rhel8,rhel9,sle12,sle15
 
 title: 'Install dnf-automatic Package'
 
@@ -22,7 +21,6 @@ identifiers:
     
 
 references:
-    anssi: BP28(R8)
     srg: SRG-OS-000191-GPOS-00080
 
 ocil_clause: 'the package is not installed'

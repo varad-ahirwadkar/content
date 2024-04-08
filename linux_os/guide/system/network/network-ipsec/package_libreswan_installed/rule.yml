@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: alinux2,alinux3,anolis23,anolis8,fedora,ol7,ol8,ol9,rhcos4,rhel7,rhel8,rhel9,rhv4,sle12,sle15,uos20
 
 title: 'Install libreswan Package'
 
@@ -36,7 +35,6 @@ references:
     nist-csf: PR.AC-3,PR.MA-2,PR.PT-4
     pcidss: Req-4.1
     srg: SRG-OS-000480-GPOS-00227,SRG-OS-000120-GPOS-00061
-    stigid@rhel9: RHEL-09-252065
 
 ocil_clause: 'the package is not installed'
 

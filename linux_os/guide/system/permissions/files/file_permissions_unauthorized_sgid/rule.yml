@@ -2,7 +2,6 @@ documentation_complete: true
 
 title: 'Ensure All SGID Executables Are Authorized'
 
-prodtype: alinux3,anolis23,anolis8,fedora,ol7,ol8,ol9,rhel7,rhel8,rhel9,sle12,sle15,uos20
 
 description: |-
     The SGID (set group id) bit should be set only on files that were installed via authorized
@@ -29,12 +28,7 @@ identifiers:
     cce@sle15: CCE-91175-0
 
 references:
-    anssi: BP28(R37),BP28(R38)
     cis-csc: 12,13,14,15,16,18,3,5
-    cis@alinux3: 6.1.15
-    cis@rhel7: 6.1.14
-    cis@rhel8: 6.1.15
-    cis@rhel9: 6.1.14
     cis@sle12: 6.1.12
     cis@sle15: 6.1.12
     cobit5: APO01.06,DSS05.04,DSS05.07,DSS06.02

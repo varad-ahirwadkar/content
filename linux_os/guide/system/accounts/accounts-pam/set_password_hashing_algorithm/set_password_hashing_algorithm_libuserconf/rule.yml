@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol7,ol8,ol9,rhel7,rhel8,rhel9,rhv4,sle12,sle15
 
 title: 'Set Password Hashing Algorithm in /etc/libuser.conf'
 
@@ -45,11 +44,9 @@ references:
     nist: IA-5(c),IA-5(1)(c),CM-6(a)
     nist-csf: PR.AC-1,PR.AC-6,PR.AC-7
     pcidss: Req-8.2.1
-    pcidss4: "8.3.2"
     srg: SRG-OS-000073-GPOS-00041
     stigid@ol7: OL07-00-010220
     stigid@rhel7: RHEL-07-010220
-    stigid@rhel9: RHEL-09-611135
 
 ocil_clause: crypt_style is not set to sha512
 

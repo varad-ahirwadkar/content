@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: ol7,ol8,rhel7,rhel8,rhv4,sle12,sle15,ubuntu2004,ubuntu2204
 
 title: 'User Initialization Files Must Be Group-Owned By The Primary Group'
 
@@ -22,6 +21,8 @@ severity: medium
 
 identifiers:
     cce@rhel7: CCE-80526-7
+    cce@rhel8: CCE-86314-2
+    cce@rhel9: CCE-87037-8
     cce@sle12: CCE-92295-5
     cce@sle15: CCE-91408-5
 

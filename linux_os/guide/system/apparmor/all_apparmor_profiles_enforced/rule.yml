@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: debian12,sle12,sle15,ubuntu2004,ubuntu2204
 
 title:  'Enforce all AppArmor Profiles'
 
@@ -34,3 +33,5 @@ references:
     cis@sle15: 1.7.1.4
     cis@ubuntu2004: 1.7.1.4
     cis@ubuntu2204: 1.6.1.4
+
+platform: package[apparmor]

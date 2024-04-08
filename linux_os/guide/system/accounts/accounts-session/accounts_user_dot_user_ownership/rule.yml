@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: ol7,ol8,rhel7,rhel8,rhv4,sle12,sle15,ubuntu2004,ubuntu2204
 
 title: 'User Initialization Files Must Be Owned By the Primary User'
 
@@ -21,6 +20,8 @@ severity: medium
 
 identifiers:
     cce@rhel7: CCE-80527-5
+    cce@rhel8: CCE-86316-7
+    cce@rhel9: CCE-87038-6
     cce@sle12: CCE-92296-3
     cce@sle15: CCE-91409-3
 

@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: ol7,ol8,ol9,rhel7,rhel8,rhel9,rhv4,sle15
 
 title: 'Shutdown System When Auditing Failures Occur'
 
@@ -47,7 +46,6 @@ references:
     srg: SRG-OS-000046-GPOS-00022,SRG-OS-000047-GPOS-00023
     stigid@ol7: OL07-00-030010
     stigid@rhel7: RHEL-07-030010
-    stigid@rhel9: RHEL-09-654265
 
 ocil_clause: 'the system is not configured to shutdown on auditd failures'
 

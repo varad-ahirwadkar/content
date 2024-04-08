@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol7,ol8,ol9,rhel7,rhel8,rhel9,sle12,sle15
 
 title: Configure Accepting Default Router in Router Advertisements on All IPv6 Interfaces By Default
 
@@ -17,8 +16,6 @@ identifiers:
     cce@sle12: CCE-91523-1
     cce@sle15: CCE-91208-9
 
-references:
-      anssi: BP28(R22)
 
 {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv6.conf.default.accept_ra_defrtr", value="0") }}}
 

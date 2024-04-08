@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: alinux2,alinux3,anolis23,anolis8,fedora,ol7,ol8,ol9,rhel7,rhel8,rhel9,rhv4,sle12,sle15,ubuntu2004,ubuntu2204
 
 title: 'Disable Kernel Parameter for IPv6 Forwarding'
 
@@ -22,11 +21,6 @@ identifiers:
 
 references:
     cis-csc: 1,11,12,13,14,15,16,2,3,7,8,9
-    cis@alinux2: 3.1.1
-    cis@alinux3: 3.2.1
-    cis@rhel7: 3.2.1
-    cis@rhel8: 3.2.1
-    cis@rhel9: 3.2.1
     cis@sle12: 3.2.1
     cis@sle15: 3.2.1
     cis@ubuntu2004: 3.2.2
@@ -41,7 +35,6 @@ references:
     srg: SRG-OS-000480-GPOS-00227
     stigid@ol8: OL08-00-040260
     stigid@rhel8: RHEL-08-040260
-    stigid@rhel9: RHEL-09-254025
     stigid@sle12: SLES-12-030364
     stigid@sle15: SLES-15-040381
 
@@ -64,3 +57,6 @@ template:
     vars:
         sysctlvar: net.ipv6.conf.all.forwarding
         datatype: int
+{{% if "openeuler" in product %}}
+        missing_parameter_pass: 'true'
+{{% endif %}}        

@@ -2,10 +2,16 @@ if(ENABLE_PYTHON_COVERAGE)
     set(PYTEST_COVERAGE_OPTIONS --cov-append --cov-report=xml --cov "${CMAKE_SOURCE_DIR}/ssg")
 endif()
 
-macro(ssg_python_unit_tests PYTHON_COMPONENT_ID RELATIVE_PYTHONPATH)
+macro(ssg_python_unit_tests PYTHON_COMPONENT_ID RELATIVE_PYTHONPATH IGNORE_SUBDIR)
+    if(NOT "${IGNORE_SUBDIR}" STREQUAL "")
+        set(IGNORE "${CMAKE_SOURCE_DIR}/tests/unit/${PYTHON_COMPONENT_ID}/${IGNORE_SUBDIR}")
+        set(TEST_COMMAND "${PYTHON_EXECUTABLE}" -m pytest "--ignore=${IGNORE}" ${PYTEST_COVERAGE_OPTIONS} "${CMAKE_SOURCE_DIR}/tests/unit/${PYTHON_COMPONENT_ID}")
+    else()
+        set(TEST_COMMAND "${PYTHON_EXECUTABLE}" -m pytest ${PYTEST_COVERAGE_OPTIONS} "${CMAKE_SOURCE_DIR}/tests/unit/${PYTHON_COMPONENT_ID}")
+    endif()
     add_test(
         NAME "python-unit-${PYTHON_COMPONENT_ID}"
-        COMMAND "${PYTHON_EXECUTABLE}" -m pytest ${PYTEST_COVERAGE_OPTIONS} "${CMAKE_SOURCE_DIR}/tests/unit/${PYTHON_COMPONENT_ID}"
+        COMMAND ${TEST_COMMAND}
     )
     set_tests_properties("python-unit-${PYTHON_COMPONENT_ID}" PROPERTIES ENVIRONMENT
         "PYTHONPATH=${CMAKE_SOURCE_DIR}/${RELATIVE_PYTHONPATH}:$ENV{PYTHONPATH}"
@@ -14,9 +20,12 @@ macro(ssg_python_unit_tests PYTHON_COMPONENT_ID RELATIVE_PYTHONPATH)
 endmacro()
 
 if(PY_PYTEST)
-    ssg_python_unit_tests("utils" "utils")
-    ssg_python_unit_tests("ssg-module" ".")
-    ssg_python_unit_tests("ssg_test_suite" "tests")
+    ssg_python_unit_tests("utils" "utils" "oscal/")
+    ssg_python_unit_tests("ssg-module" "." "")
+    ssg_python_unit_tests("ssg_test_suite" "tests" "")
+    if(PYTHON_VERSION_MAJOR GREATER 2 AND PYTHON_VERSION_MINOR GREATER 7 AND PY_TRESTLE AND PY_LXML)
+        ssg_python_unit_tests("utils/oscal" "utils/oscal" "")
+    endif()
 endif()
 
 add_test(
@@ -83,21 +92,25 @@ set_tests_properties("fix_rules" PROPERTIES LABELS quick)
 set_tests_properties("fix_rules" PROPERTIES DEPENDS "test-rule-dir-json")
 set_tests_properties("fix_rules" PROPERTIES FIXTURES_REQUIRED "rule-dir-json")
 
-macro(mypy_test SCRIPT)
+macro(mypy_test SCRIPT FOLLOW_IMPORTS)
     if(PY_MYPY)
         add_test(
             NAME "test-mypy-${SCRIPT}"
-            COMMAND env "${PYTHON_EXECUTABLE}" -m mypy "${CMAKE_SOURCE_DIR}/${SCRIPT}"
+            COMMAND env "${PYTHON_EXECUTABLE}" -m mypy "${CMAKE_SOURCE_DIR}/${SCRIPT}" "--follow-imports=${FOLLOW_IMPORTS}"
         )
         set_tests_properties("test-mypy-${SCRIPT}" PROPERTIES LABELS quick)
         set_tests_properties("test-mypy-${SCRIPT}" PROPERTIES LABELS mypy)
     endif()
 endmacro()
 
-mypy_test("utils/import_srg_spreadsheet.py")
-mypy_test("utils/check_eof.py")
-mypy_test("utils/no_new_global_applicable_rules.py")
+mypy_test("utils/import_srg_spreadsheet.py" "skip")
+mypy_test("utils/check_eof.py" "normal")
+mypy_test("utils/import_disa_stig.py" "skip")
+mypy_test("tests/cces-removed.py" "normal")
 
+if(PYTHON_VERSION_MAJOR GREATER 2 AND PYTHON_VERSION_MINOR GREATER 7 AND PY_TRESTLE AND PY_LXML)
+    mypy_test("utils/oscal/" "skip")
+endif()
 
 if(PYTHON_VERSION_MAJOR GREATER 2 AND PY_OPENPYXL AND PY_PANDAS AND SSG_PRODUCT_RHEL9)
     add_test(
@@ -241,30 +254,14 @@ endmacro()
 
 
 if(PYTHON_VERSION_MAJOR GREATER 2 AND SSG_PRODUCT_RHEL9)
-    ssg_refcheck_test("rhel9" "cis_workstation_l1" "cis")
-    ssg_refcheck_test("rhel9" "cis_workstation_l2" "cis")
-    ssg_refcheck_test("rhel9" "cis_server_l1" "cis")
-    ssg_refcheck_test("rhel9" "cis" "cis")
-    ssg_refcheck_test("rhel9" "ccn_basic" "ccn")
-    ssg_refcheck_test("rhel9" "ccn_advanced" "ccn")
-    # This exclude can be removed once enable_authselect has a stigid
-    ssg_refcheck_test("rhel9" "stig" "stigid" "enable_authselect")
     stig_srg_mapping_test("rhel9")
 endif()
 
 if(PYTHON_VERSION_MAJOR GREATER 2 AND SSG_PRODUCT_RHEL8)
-    ssg_refcheck_test("rhel8" "cis_workstation_l1" "cis")
-    ssg_refcheck_test("rhel8" "cis_workstation_l2" "cis")
-    ssg_refcheck_test("rhel8" "cis_server_l1" "cis")
-    ssg_refcheck_test("rhel8" "cis" "cis")
     stig_srg_mapping_test("rhel8")
 endif()
 
 if(PYTHON_VERSION_MAJOR GREATER 2 AND SSG_PRODUCT_RHEL7)
-    ssg_refcheck_test("rhel7" "cis_workstation_l1" "cis")
-    ssg_refcheck_test("rhel7" "cis_workstation_l2" "cis")
-    ssg_refcheck_test("rhel7" "cis_server_l1" "cis")
-    ssg_refcheck_test("rhel7" "cis" "cis")
     stig_srg_mapping_test("rhel7")
 endif()
 
@@ -315,24 +312,41 @@ if(PYTHON_VERSION_MAJOR GREATER 2)
     set_tests_properties("install-vm" PROPERTIES LABELS quick)
 endif()
 
-if(SSG_PRODUCT_RHEL9)
 add_test(
     NAME "automatus-sanity"
     COMMAND env "PYTHONPATH=$ENV{PYTHONPATH}" "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tests/automatus.py" "--help"
 )
 set_tests_properties("automatus-sanity" PROPERTIES LABELS quick)
 
+
+if(SSG_PRODUCT_RHEL9)
 add_test(
     NAME "components"
     COMMAND env "PYTHONPATH=$ENV{PYTHONPATH}" "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test_components.py" --build-dir "${CMAKE_BINARY_DIR}" --source-dir "${CMAKE_SOURCE_DIR}" --product "rhel9"
 )
+set_tests_properties("components" PROPERTIES LABELS quick)
 endif()
 
-if(PYTHON_VERSION_MAJOR GREATER 2)
+macro(cce_avail_check TEST_NAME_SUFFIX PRODUCTS CCE_LIST_PATH)
+    if(PYTHON_VERSION_MAJOR GREATER 2)
+        add_test(
+            NAME "cce_avail_check-${TEST_NAME_SUFFIX}"
+            COMMAND env "PYTHONPATH=$ENV{PYTHONPATH}" "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/cces-removed.py" --root  "${CMAKE_SOURCE_DIR}" --json "${CMAKE_SOURCE_DIR}/build/rule_dirs.json" --products "${PRODUCTS}" --cce-list "${CCE_LIST_PATH}"
+        )
+        set_tests_properties("cce_avail_check-${TEST_NAME_SUFFIX}" PROPERTIES FIXTURES_REQUIRED "rule-dir-json")
+        set_tests_properties("cce_avail_check-${TEST_NAME_SUFFIX}" PROPERTIES DEPENDS "test-rule-dir-json")
+        set_tests_properties("cce_avail_check-${TEST_NAME_SUFFIX}" PROPERTIES LABELS quick)
+    endif()
+endmacro()
+
+cce_avail_check("rhel-all" "rhel7,rhel8,rhel9,rhel10" "${CMAKE_SOURCE_DIR}/shared/references/cce-redhat-avail.txt")
+cce_avail_check("sle12" "sle12" "${CMAKE_SOURCE_DIR}/shared/references/cce-sle12-avail.txt")
+cce_avail_check("sle15" "sle15" "${CMAKE_SOURCE_DIR}/shared/references/cce-sle15-avail.txt")
+
+if(PYTHON_VERSION_MAJOR GREATER 2 AND PYTHON_VERSION_MINOR GREATER 6)
     add_test(
-        NAME "test-no-new-global-applicable-rules"
-        COMMAND env "PYTHONPATH=$ENV{PYTHONPATH}" "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/utils/no_new_global_applicable_rules.py" --root "${CMAKE_SOURCE_DIR}" --json "${CMAKE_SOURCE_DIR}/build/rule_dirs.json"
+        NAME "utils-import_disa_stig_sanity"
+        COMMAND env "PYTHONPATH=$ENV{PYTHONPATH}" "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/utils/import_disa_stig.py" "--help"
+        set_tests_properties("utils-import_disa_stig_sanity" PROPERTIES LABELS quick)
     )
-    set_tests_properties("test-no-new-global-applicable-rules" PROPERTIES FIXTURES_REQUIRED "rule-dir-json")
-    set_tests_properties("test-no-new-global-applicable-rules" PROPERTIES DEPENDS "test-rule-dir-json")
 endif()

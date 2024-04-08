@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol8,ol9,rhel8,rhel9
 
 title: 'Enable Certmap in SSSD'
 
@@ -32,7 +31,6 @@ references:
    srg: SRG-OS-000068-GPOS-00036
    stigid@ol8: OL08-00-020090
    stigid@rhel8: RHEL-08-020090
-   stigid@rhel9: RHEL-09-631015
 
 warnings:
     - general: |-

@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: ol7,ol8,rhel7,rhel8,sle12,sle15
 
 title: 'Ensure sudo umask is appropriate - sudo umask'
 
@@ -27,8 +26,6 @@ identifiers:
     cce@sle12: CCE-91498-6
     cce@sle15: CCE-91189-1
 
-references:
-    anssi: BP28(R58)
 
 ocil_clause: 'umask is not set with the appropriate value for sudo'
 

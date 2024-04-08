@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: ol7,ol8,rhel7,rhel8,sle12,sle15
 
 title: 'Ensure sudo Ignores Commands In Current Dir - sudo ignore_dot'
 
@@ -26,8 +25,6 @@ identifiers:
     cce@sle12: CCE-91493-7
     cce@sle15: CCE-91185-9
 
-references:
-    anssi: BP28(R58)
 
 ocil_clause: 'ignore_dot is not enabled in sudo'
 

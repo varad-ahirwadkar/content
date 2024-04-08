@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol7,ol8,ol9,rhel7,rhel8,rhel9,sle12,sle15
 
 title: 'Set Kernel Parameter to Increase Local Port Range'
 
@@ -20,8 +19,6 @@ identifiers:
     cce@sle12: CCE-91540-5
     cce@sle15: CCE-91225-3
 
-references:
-    anssi: BP28(R22)
 
 {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.ip_local_port_range", value="32768 65535") }}}
 

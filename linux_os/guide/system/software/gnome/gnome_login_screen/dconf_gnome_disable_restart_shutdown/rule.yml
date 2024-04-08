@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: fedora,ol7,ol8,ol9,rhel7,rhel8,rhel9
 
 title: 'Disable the GNOME3 Login Restart and Shutdown Buttons'
 
@@ -43,7 +42,6 @@ references:
     nist: CM-6(a),AC-6(1),CM-7(b)
     nist-csf: PR.AC-4,PR.DS-5
     srg: SRG-OS-000480-GPOS-00227
-    stigid@rhel9: RHEL-09-271095,RHEL-09-271100
 
 ocil_clause: 'disable-restart-buttons has not been configured or is not disabled'
 

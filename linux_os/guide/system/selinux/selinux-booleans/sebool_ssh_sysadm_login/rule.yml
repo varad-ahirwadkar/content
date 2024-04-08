@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: ol7,ol8,ol9,rhel7,rhel8,rhel9,rhv4,sle12,sle15
 
 title: 'Disable the ssh_sysadm_login SELinux Boolean'
 
@@ -22,7 +21,6 @@ rationale: |-
     require protection from non-privileged users.
 
 references:
-    anssi: BP28(R67)
     disa: CCI-002165,CCI-002235
     srg: SRG-OS-000324-GPOS-00125
     stigid@ol7: OL07-00-020022

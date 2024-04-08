@@ -158,6 +158,9 @@ class Control(ssg.entities.common.SelectionHandler, ssg.entities.common.XCCDFEnt
                 % (control.automated,  control.id, control.title))
             raise ValueError(msg)
         control.levels = control_dict.get("levels", default_level)
+        if type(control.levels) is not list:
+            msg = "Levels for %s must be an array" % control.id
+            raise ValueError(msg)
         control.notes = control_dict.get("notes", "")
         selections = control_dict.get("rules", {})
 
@@ -172,6 +175,22 @@ class Control(ssg.entities.common.SelectionHandler, ssg.entities.common.XCCDFEnt
         data["rules"] = self.selections
         data["controls"] = self.controls
         return data
+
+    def add_references(self, reference_type, rules):
+        for selection in self.rules:
+            if "=" in selection:
+                continue
+            rule = rules.get(selection)
+            if not rule:
+                continue
+            try:
+                rule.add_extra_reference(reference_type, self.id)
+            except ValueError as exc:
+                msg = (
+                    "Please remove any duplicate listing of rule '%s' in "
+                    "control '%s'." % (
+                        rule.id_, self.id))
+                raise ValueError(msg)
 
 
 class Level(ssg.entities.common.XCCDFEntity):
@@ -204,10 +223,13 @@ class Policy(ssg.entities.common.XCCDFEntity):
         self.levels_by_id = dict()
         self.title = ""
         self.source = ""
+        self.reference_type = None
+        self.product = None
 
     def represent_as_dict(self):
         data = dict()
         data["id"] = self.id
+        data["policy"] = self.policy
         data["title"] = self.title
         data["source"] = self.source
         data["definition_location"] = self.filepath
@@ -229,6 +251,22 @@ class Policy(ssg.entities.common.XCCDFEntity):
                 msg = "Control %s:%s contains nonexisting rule(s) %s" % (
                     self.id, c.id, ", ".join(nonexisting_rules))
                 raise ValueError(msg)
+
+    def check_levels_validity(self):
+        """
+        This function goes through all controls in the policy and checks if all
+        levels defined for individual controls are valid for the policy.
+        If the policy has no levels defined, then all controls should have the
+        "default" level defined (this is defined implicitly).
+        """
+        for c in self.controls:
+            expected_levels = [lvl.id for lvl in self.levels]
+            for lvl in c.levels:
+                if lvl not in expected_levels:
+                    msg = ("Invalid level {0} used in control {1} "
+                           "defined at {2}. Allowed levels are: {3}".format(
+                            lvl, c.id, self.filepath, expected_levels))
+                    raise ValueError(msg)
 
     def remove_selections_not_known(self, known_rules):
         for c in self.controls:
@@ -307,10 +345,14 @@ class Policy(ssg.entities.common.XCCDFEntity):
         if controls_dir:
             self.controls_dir = os.path.join(os.path.dirname(self.filepath), controls_dir)
         self.id = ssg.utils.required_key(yaml_contents, "id")
+        self.policy = ssg.utils.required_key(yaml_contents, "policy")
         self.title = ssg.utils.required_key(yaml_contents, "title")
         self.source = yaml_contents.get("source", "")
+        self.reference_type = yaml_contents.get("reference_type", None)
+        self.product = yaml_contents.get("product", None)
 
-        level_list = yaml_contents.get("levels", [])
+        default_level_dict = {"id": "default"}
+        level_list = yaml_contents.get("levels", [default_level_dict])
         for lv in level_list:
             level = Level.from_level_dict(lv)
             self.levels.append(level)
@@ -321,6 +363,7 @@ class Policy(ssg.entities.common.XCCDFEntity):
         else:
             controls_tree = ssg.utils.required_key(yaml_contents, "controls")
         self.save_controls_tree(controls_tree)
+        self.check_levels_validity()
 
     def get_control(self, control_id):
         try:
@@ -353,6 +396,30 @@ class Policy(ssg.entities.common.XCCDFEntity):
                 for l in eligible_levels:
                     levels[l] = ""
         return list(levels.keys())
+
+    def _check_conflict_in_rules(self, rules):
+        for rule_id, rule in rules.items():
+            if self.reference_type in rule.references:
+                msg = (
+                    "Rule %s contains %s reference, but this reference "
+                    "type is provided by %s controls. Please remove the "
+                    "reference from rule.yml." % (
+                        rule_id, self.reference_type, self.id))
+                raise ValueError(msg)
+
+    def add_references(self, rules):
+        if not self.reference_type:
+            return
+        product = self.env_yaml["product"]
+        if self.product and product not in self.product:
+            return
+        allowed_reference_types = self.env_yaml["reference_uris"].keys()
+        if self.reference_type not in allowed_reference_types:
+            msg = "Unknown reference type %s" % (self.reference_type)
+            raise(ValueError(msg))
+        self._check_conflict_in_rules(rules)
+        for control in self.controls_by_id.values():
+            control.add_references(self.reference_type, rules)
 
 
 class ControlsManager():
@@ -402,6 +469,11 @@ class ControlsManager():
         policy = self._get_policy(policy_id)
         control = policy.get_control(control_id)
         return control
+
+    def get_all_controls_dict(self, policy_id):
+        # type: (str) -> typing.Dict[str, list]
+        policy = self._get_policy(policy_id)
+        return policy.controls_by_id
 
     def _get_policy(self, policy_id):
         try:
@@ -453,3 +525,7 @@ class ControlsManager():
         for policy_id, policy in self.policies.items():
             filename = os.path.join(output_dir, "{}.{}".format(policy_id, "yml"))
             policy.dump_yaml(filename)
+
+    def add_references(self, rules):
+        for policy in self.policies.values():
+            policy.add_references(rules)

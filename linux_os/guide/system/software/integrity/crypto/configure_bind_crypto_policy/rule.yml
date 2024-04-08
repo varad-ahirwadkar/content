@@ -1,6 +1,5 @@
 documentation_complete: true
 
-prodtype: alinux2,alinux3,anolis23,anolis8,fedora,ol8,ol9,rhcos4,rhel8,rhel9,rhv4,uos20
 
 title: 'Configure BIND to use System Crypto Policy'
 
@@ -32,7 +31,6 @@ references:
     srg: SRG-OS-000423-GPOS-00187,SRG-OS-000426-GPOS-00190
     stigid@ol8: OL08-00-010020
     stigid@rhel8: RHEL-08-010020
-    stigid@rhel9: RHEL-09-672050
 
 ocil_clause: |-
     BIND is installed and the BIND config file doesn't contain the
@@ -53,3 +51,5 @@ fixtext: |-
     include "/etc/crypto-policies/back-ends/bind.config";
 
 srg_requirement: '{{{ full_name }}} BIND crypto policy must use approved ciphers.'
+
+platform: package[bind]
