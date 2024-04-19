@@ -443,10 +443,12 @@ class Benchmark(XCCDFEntity):
             plat = ET.SubElement(root, "{%s}platform" % XCCDF12_NS)
             plat.set("idref", cpe_name)
 
-    def _add_profiles_xml(self, root, profiles_to_not_include):
+    def _add_profiles_xml(self, root, components_to_not_include):
+        profiles_to_not_include = components_to_not_include.get("profiles", set())
         for profile in self.profiles:
             if profile.id_ in profiles_to_not_include:
                 continue
+            profile.remove_components_not_included(components_to_not_include)
             root.append(profile.to_xml_element())
 
     def _add_values_xml(self, root):
@@ -455,7 +457,7 @@ class Benchmark(XCCDFEntity):
 
     def _add_groups_xml(self, root, components_to_not_include, env_yaml=None):
         groups_in_bench = list(self.groups.keys())
-        priority_order = ["system", "services"]
+        priority_order = ["system", "services", "auditing"]
         groups_in_bench = reorder_according_to_ordering(groups_in_bench, priority_order)
 
         groups_to_not_include = components_to_not_include.get("groups", set())
@@ -497,7 +499,7 @@ class Benchmark(XCCDFEntity):
         contributors_file = os.path.join(os.path.dirname(__file__), "../Contributors.xml")
         add_benchmark_metadata(root, contributors_file)
 
-        self._add_profiles_xml(root, components_to_not_include.get("profiles", set()))
+        self._add_profiles_xml(root, components_to_not_include)
         self._add_values_xml(root)
         self._add_groups_xml(root, components_to_not_include, env_yaml)
         self._add_rules_xml(root, components_to_not_include.get("rules", set()),  env_yaml,)
@@ -537,11 +539,12 @@ class Benchmark(XCCDFEntity):
     def __str__(self):
         return self.id_
 
-    def get_benchmark_xml_for_profile(self, env_yaml, profile):
-        rules, groups = self.get_components_not_included_in_a_profiles([profile])
-        cpe_platforms = self.get_not_used_cpe_platforms([profile])
+    def get_benchmark_xml_for_profiles(self, env_yaml, profiles):
+        rules, groups = self.get_components_not_included_in_a_profiles(profiles)
+        cpe_platforms = self.get_not_used_cpe_platforms(profiles)
+        profiles_ids = [profile.id_ for profile in profiles]
         profiles = set(filter(
-            lambda id_, profile_id=profile.id_: id_ != profile_id,
+            lambda id_, profiles_ids=profiles_ids: id_ not in profiles_ids,
             [profile.id_ for profile in self.profiles]
         ))
         components_to_not_include = {
@@ -550,7 +553,7 @@ class Benchmark(XCCDFEntity):
                 "profiles": profiles,
                 "cpe_platforms": cpe_platforms
             }
-        return profile.id_, self.to_xml_element(
+        return profiles_ids, self.to_xml_element(
             env_yaml,
             components_to_not_include=components_to_not_include
         )
@@ -1583,6 +1586,7 @@ class BuildLoader(DirectoryLoader):
         loader.sce_metadata = self.sce_metadata
         # Do it this way so we only have to parse the component metadata once.
         loader.rule_to_components = self.rule_to_components
+        loader.components_dir = self.components_dir
         return loader
 
     def export_group_to_file(self, filename):
@@ -1656,10 +1660,10 @@ class LinearLoader(object):
             )
 
         for profile in self.benchmark.profiles:
-            profile_id, benchmark = self.benchmark.get_benchmark_xml_for_profile(
-                self.env_yaml, profile
+            profiles_ids, benchmark = self.benchmark.get_benchmark_xml_for_profiles(
+                self.env_yaml, [profile]
             )
-            yield profile_id, benchmark
+            yield profiles_ids.pop(), benchmark
 
     def load_compiled_content(self):
         self.product_cpes.load_cpes_from_directory_tree(self.resolved_cpe_items_dir, self.env_yaml)
@@ -1683,7 +1687,10 @@ class LinearLoader(object):
             g.load_entities(self.rules, self.values, self.groups)
 
     def export_benchmark_to_xml(self):
-        return self.benchmark.to_xml_element(self.env_yaml)
+        _, benchmark = self.benchmark.get_benchmark_xml_for_profiles(
+            self.env_yaml, self.benchmark.profiles
+        )
+        return benchmark
 
     def export_benchmark_to_file(self, filename):
         register_namespaces()
