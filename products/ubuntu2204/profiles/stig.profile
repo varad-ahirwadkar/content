@@ -211,9 +211,8 @@ selections:
     # UBTU-22-653050 The Ubuntu operating system must be configured to permit only authorized users ownership of the audit log files.
     - file_ownership_var_log_audit_stig
 
-    ### TODO (double check, focal uses _stig)
     # UBTU-22-653055 The Ubuntu operating system must permit only authorized groups ownership of the audit log files.
-    - file_group_ownership_var_log_audit
+    - file_group_ownership_var_log_audit_stig
 
     # UBTU-22-653060 The Ubuntu operating system must be configured so that the audit log directory is not write-accessible by unauthorized users.
     - directory_permissions_var_log_audit
@@ -620,9 +619,8 @@ selections:
     # UBTU-22-654225 The Ubuntu operating system must generate audit records when successful/unsuccessful attempts to modify the /etc/sudoers.d directory occur
     - audit_rules_sudoers_d
 
-    ### TODO (rule needed; reevaluate requirement)
-    # Analogous to set_password_hashing_algorithm_passwordauth
     # UBTU-22-611055 The Ubuntu operating system must store only encrypted representations of passwords
+    - set_password_hashing_algorithm_systemauth
 
     ### TODO (rule needed)
     # Analogous to audit_rules_login_events_lastlog
@@ -636,13 +634,14 @@ selections:
     # Analogous to package_telnetd_removed
     # UBTU-22-215020 The Ubuntu operating system must not have the "systemd-timesyncd" package installed
 
-    ### TODO (rule needed; reevaluate permissions)
-    # Similar to file_permissions_library_dirs and dir_permissions_library_dirs
+    ### TODO (reevaluate directory permissions)
     # UBTU-22-232027 The Ubuntu operating system must generate system journal entries without revealing information that could be exploited by adversaries
+    - file_permissions_system_journal
+    - dir_permissions_system_journal
 
-    ### TODO (rule needed)
-    # Analogous to directory_ownership_var_log_audit
+    ### TODO (incomplete remediation - tmpfiles.d)
     # UBTU-22-232080 The Ubuntu operating system must configure the directories used by the system journal to be owned by "root"
+    - dir_owner_system_journal
 
     ### TODO (rule needed)
     # Analogous to directory_group_ownership_var_log_audit
